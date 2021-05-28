@@ -1,39 +1,80 @@
-from view import Main_window
+import tkinter as tk
+from view import MultiColumnListbox, Main_panel_widget
 
 
-BTNs = ["OK"]
+class Controler:
+	def __init__(self, win):
+		self.win = win
+		Main_panel(self.win)
 
 
-class Button_controler():
-	def __init__(self, btnframe):
-		self.view = btnframe
-		self.btn_list = []
+class Main_panel:
+	def __init__(self, win):
+		self.win = win
+		self._setup_widgets()
+		self.product = Product_info(self.win)
 
-	def create_btn(self, btn_name):
-		btn = self.view.set_btn(btn_name)
-		self.btn_list.append(btn)
-		return btn
+	def _setup_widgets(self):
+		self.frame = Main_panel_widget(self.win)
+		tk.Button(self.frame.btns_fieled, text="Print", command=self.get, relief="flat").pack(anchor="w", padx=10)
 
-
-def click_ok(fields):
-	data = {}
-	for field_name, field_val in fields.items():
-		# data.append(field_val.get())
-		data[field_name] = field_val.get()
-	print(data)
-
-
-def runapp():
-	win = Main_window()
-	win.geometry("600x600")
-	form_view = win.get_form()
-	
-	btn_control = Button_controler(form_view.btnframe)
-	btn_ok = btn_control.create_btn(BTNs[0])
-	btn_ok.config(command=lambda: click_ok(form_view.get_fields()))
+	def get(self):
+		data = self.frame.get()
+		products_name = self.product.get_all_fields()
+		data.update({"Продукт":products_name}) 
+		print(f"[RETURN] {data}")
+		return data
 
 
-	win.mainloop()
+class Product_info:
+	def __init__(self, win):
+		self.win = win
+		self._setup_btns()
+
+	def _setup_btns(self):
+		self.table = MultiColumnListbox(self.win)
+		btns_name = ["AddTest", "Add", "Delete","Print"]
+		self.btns = []
+		for btn_name in btns_name:
+			btn = tk.Button(self.table.btns_fieled, text=btn_name, relief="flat", width=8)
+			btn.pack()
+			self.btns.append(btn)
+		self._btn_command_setup()
+
+	def _btn_command_setup(self):
+		for btn in self.btns:
+			if btn.config("text")[4] == "AddTest":
+				btn.config(command=self.table.add_field)
+			elif btn.config("text")[4] == "Add":
+				btn.config(command=self.table.open_form)
+			elif btn.config("text")[4] == "Delete":
+				btn.config(command=self.table.del_fileds)
+			elif btn.config("text")[4] == "Print":
+				btn.config(command=self.get_selected_field)
+
+	def get_all_fields(self):
+		data = []
+		for item in self.table.tree.get_children():
+			data.append(self.table.tree.item(item)["values"])
+		return data
+
+	def get_selected_field(self):
+		item = self.table.tree.selection()
+		data = self.table.tree.item(item)["values"]
+		print(f"[RETURN] {data}")
+		return data
+
+
+if __name__ == '__main__':
+	root = tk.Tk()
+	cotroler = Controler(root)
+	root.mainloop()
 
 
 
+
+"""
+    def _create_btns(self):
+        container = tk.Frame(self.master)
+        container.pack(side="right")
+"""
