@@ -1,4 +1,3 @@
 env
 __pycache__
-~$filename.xlsx
-filename.xlsx
+*.xlsx
