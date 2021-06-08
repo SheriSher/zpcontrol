@@ -1,5 +1,6 @@
 import tkinter as tk
 from view import MultiColumnListbox, Main_panel_widget
+from xls_creater import Xlsx_creater
 
 
 class Controler:
@@ -16,7 +17,11 @@ class Main_panel:
 
 	def _setup_widgets(self):
 		self.frame = Main_panel_widget(self.win)
-		tk.Button(self.frame.btns_fieled, text="Print", command=self.get, relief="flat").pack(anchor="w", padx=10)
+		tk.Button(self.frame.btns_fieled, text="Import Xlsx", command=self.import_xlsx, relief="flat").pack(anchor="w", padx=10)
+
+	def import_xlsx(self):
+		Xlsx_creater(data=self.get())
+
 
 	def get(self):
 		data = self.frame.get()
